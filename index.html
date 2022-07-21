@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-6 mx-auto shadow p-5">
+                <input type="text" placeholder="Todo name" class="form-control" id="todoInp">
+                <input type="text" placeholder="product" class="form-control" id="todoProduct">
+                <input type="text" placeholder="price" class="form-control" id="todoPrice">
+                <input type="text" placeholder="time" class="form-control" id="todoTime">
+                <button class="btn btn-dark w-100 mt-3" id="todoBtn">Add</button>
+
+               
+            </div>
+        </div>
+    </div>
+    <div id="allTodo" class="card w-25 h-25"></div>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.0/firebase-app.js";
+        import { getDatabase, ref, set , onValue} from "https://www.gstatic.com/firebasejs/9.9.0/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyCnKvb6gw46tElmXPjYLXwPiWjKMRs9XXc",
+          authDomain: "my-new-project-4e23f.firebaseapp.com",
+          databaseURL: "https://my-new-project-4e23f-default-rtdb.firebaseio.com",
+          projectId: "my-new-project-4e23f",
+          storageBucket: "my-new-project-4e23f.appspot.com",
+          messagingSenderId: "1036726277929",
+          appId: "1:1036726277929:web:f161b47caf50cd7a6c0938"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+
+        let dbRef = ref(db, "todos");
+        let todoArray = [];
+        let todoId = 0;
+        onValue(dbRef, function(snapshot){
+            todoArray = snapshot.val();
+            console.log(todoArray, todoArray.length);
+            if (todoArray) {
+                todoId = todoArray.length;
+                displayTodo(todoArray);
+            } else {
+                todoId = 0;         
+            }
+        })
+
+        document.getElementById("todoBtn").addEventListener("click", function(){
+            let todo = {
+              fName:todoInp.value,
+              product:todoProduct.value,
+              price:todoPrice.value,
+              itTime:todoTime.value
+            }
+            let todoRef = ref(db, `todos/${todoId}`);
+            set(todoRef, todo);
+        })
+
+        function displayTodo (todoArray) {
+            let todoHTML = "";
+            todoArray.map((todo, i) => {
+                todoHTML += `<div class="card shadow mb-2">${todo.product}</div>`
+            })
+            allTodo.innerHTML = todoHTML;
+        }
+
+      </script>
+    
+</body>
+</html>
